@@ -1,0 +1,1 @@
+Experimenting with running metabase locally with Docker. The dataset used is this project is Gym Membership Dataset from [Kaggle](https://www.kaggle.com/datasets/ka66ledata/gym-membership-dataset/data). This project is done mainly to refresh my knowledge and learn several new things about Metabase that I got from my previous work experience.

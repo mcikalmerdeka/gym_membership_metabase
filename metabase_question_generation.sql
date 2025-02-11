@@ -1,4 +1,4 @@
--- Checking the values
+-- Checking original table
 SELECT
     id,
     gender,
@@ -19,6 +19,92 @@ SELECT
     uses_sauna
 FROM gym_members;
 
+-- Checking the processed table
+SELECT
+    id,
+    gender,
+    birthday,
+    age,
+    abonoment_type,
+    visit_per_week,
+    attend_group_lesson,
+    avg_time_check_in,
+    avg_time_check_out,
+    avg_time_in_gym,
+    drink_abo,
+    personal_training,
+    uses_sauna,
+    name_personal_trainer,
+    UNNEST(string_to_array(fav_group_lesson, ', ')) AS lesson,
+    UNNEST(string_to_array(fav_drink, ', ')) AS drink,
+    UNNEST(string_to_array(days_per_week, ', ')) AS day_of_week
+FROM gym_members;
+
+-- ================================================================================================
+
+-- Amount of membership
+SELECT
+    COUNT(*) as total_members
+FROM gym_members;
+
+-- Amount of personal trainer
+SELECT
+    COUNT(DISTINCT name_personal_trainer) as total_personal_trainers 
+FROM gym_members;
+
+-- Number of unique group lessons
+WITH expanded_lessons AS (
+    SELECT id, UNNEST(string_to_array(fav_group_lesson, ', ')) AS lesson
+    FROM gym_members
+    WHERE fav_group_lesson IS NOT NULL
+)
+SELECT COUNT(DISTINCT lesson) as unique_group_lessons
+FROM expanded_lessons;
+
+-- ================================================================================================
+
+-- Grouping by abonoment type
+SELECT
+    abonoment_type,
+    COUNT(*) as total_members
+FROM gym_members
+GROUP BY abonoment_type;
+
+-- Grouping by gender
+SELECT
+    gender,
+    COUNT(*) as total_members
+FROM gym_members
+GROUP BY gender;
+
+-- Grouping by usage of personal trainer or not
+SELECT
+    personal_training,
+    COUNT(*) as total_members
+FROM gym_members
+GROUP BY personal_training;
+
+-- Grouping by usage of sauna or not
+SELECT
+    uses_sauna,
+    COUNT(*) as total_members
+FROM gym_members
+GROUP BY uses_sauna;
+
+-- Grouping by attendance of group lesson or not
+SELECT
+    attend_group_lesson,
+    COUNT(*) as total_members
+FROM gym_members
+GROUP BY attend_group_lesson;
+
+-- Grouping by drink abonoment or not
+SELECT
+    drink_abo as drink_abonoment,
+    COUNT(*) as total_members
+FROM gym_members
+GROUP BY drink_abo;
+
 -- ================================================================================================
 
 -- Check the visit per week statistics
@@ -30,7 +116,7 @@ FROM gym_members;
 
 -- ================================================================================================
 
--- Check the gym duration statistics
+-- Check the gym session duration statistics
 SELECT
     MIN(avg_time_in_gym)::integer as shortest_time_in_gym,
     CEIL(AVG(avg_time_in_gym)) as avg_time_in_gym,
@@ -64,17 +150,6 @@ SELECT
 FROM check_out
 LEFT JOIN check_in
     ON check_in_hour = check_out_hour;
-
--- ================================================================================================
-
--- Number of unique group lessons
-WITH expanded_lessons AS (
-    SELECT id, UNNEST(string_to_array(fav_group_lesson, ', ')) AS lesson
-    FROM gym_members
-    WHERE fav_group_lesson IS NOT NULL
-)
-SELECT COUNT(DISTINCT lesson) as unique_group_lessons
-FROM expanded_lessons;
 
 -- ================================================================================================
 
@@ -132,9 +207,10 @@ assigned_ranks AS (
 -- Get the most popular items for each category
 SELECT
     category,
-    item
+    item,
+    rank as popularity_rank
 FROM assigned_ranks
-WHERE rank = 1;
+WHERE rank IN (1, 2);
 
 -- ================================================================================================
 
@@ -160,6 +236,13 @@ ORDER BY
         WHEN day_of_week = 'Sat' THEN 6
         WHEN day_of_week = 'Sun' THEN 7
     END;
+
+
+-- ================================================================================================
+
+-- 
+
+
 
 -- Count total number of rows
 SELECT COUNT(*) as total_rows 

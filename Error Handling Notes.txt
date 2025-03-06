@@ -7,3 +7,13 @@ Adding Multiple Field Filters in Metabase
 https://claude.ai/chat/e085259b-ddbb-4a90-be1f-6a3a532f75cc
 
 ---------------------------------------------------------------------------------------------------
+
+Initiate Docker to Save Progress
+docker run -d -p 3000:3000 -v ~/metabase-data:/metabase-data -e "MB_DB_FILE=/metabase-data/metabase.db" --restart unless-stopped --name metabase metabase/metabase
+
+docker run -d -p 3000:3000 -v metabase-data:/metabase-data -e "MB_DB_FILE=/metabase-data/metabase.db" --restart unless-stopped --name metabase metabase/metabase
+
+---------------------------------------------------------------------------------------------------
+
+Deploy Metabase on Server
+Source : https://chatgpt.com/c/67a89cf1-0d04-800a-9e18-9bc8df7d41ac

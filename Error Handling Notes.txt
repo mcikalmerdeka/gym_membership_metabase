@@ -16,4 +16,5 @@ docker run -d -p 3000:3000 -v metabase-data:/metabase-data -e "MB_DB_FILE=/metab
 ---------------------------------------------------------------------------------------------------
 
 Deploy Metabase on Server
-Source : https://chatgpt.com/c/67a89cf1-0d04-800a-9e18-9bc8df7d41ac
+https://chatgpt.com/c/67a89cf1-0d04-800a-9e18-9bc8df7d41ac
+https://claude.ai/chat/0e503799-1779-409f-aea9-af93e4d8911e

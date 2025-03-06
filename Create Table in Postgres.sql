@@ -128,3 +128,42 @@ INSERT INTO gym_members (
     '19:31', '21:27', 116.0,
     FALSE, NULL, FALSE, NULL, TRUE
 );
+
+
+-- ================================================================================================
+
+-- Create the gym_members_normalized table with all columns
+CREATE TABLE IF NOT EXISTS gym_members_normalized (
+    id INTEGER,
+    gender VARCHAR(10),
+    birthday TIMESTAMP,
+    age NUMERIC(4, 1),
+    abonoment_type VARCHAR(20),
+    visit_per_week NUMERIC(3, 1),
+    attend_group_lesson VARCHAR(1),
+    avg_time_check_in TIME,
+    avg_time_check_out TIME,
+    avg_time_in_gym NUMERIC(5, 1),
+    drink_abo VARCHAR(1),
+    personal_training VARCHAR(1),
+    uses_sauna VARCHAR(1),
+    name_personal_trainer VARCHAR(100),
+    lesson VARCHAR(50),
+    drink VARCHAR(50),
+    day_of_week VARCHAR(3)
+);
+
+-- Insert data into gym_members_normalized
+COPY gym_members_normalized FROM 'E:\Personal Projects\Gym Membership Metabase\gym_membership_cleaned_normalized.csv' 
+WITH (
+    FORMAT csv,
+    HEADER true,
+    DELIMITER ',',
+    NULL '',
+    QUOTE '"'
+);
+
+-- Check the data in gym_members_normalized
+SELECT * FROM gym_members_normalized;
+
+SELECT * FROM gym_members;

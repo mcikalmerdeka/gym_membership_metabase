@@ -1,0 +1,46 @@
+METABASE PARAMETER TYPES REFERENCE
+=====================================
+
+There are 3 main ways to handle parameters/filters in Metabase:
+
+1. QUESTION PARAMETERS ({{parameter}}) - Only work in individual questions
+   - Syntax: WHERE condition = {{parameter_name}}
+   - Example: WHERE gender = {{gender}}
+   - Limitation: Filters disappear when added to dashboard
+   - Use case: Standalone questions that need filtering
+
+2. OPTIONAL PARAMETERS ([[AND...]]) - Only work in individual questions  
+   - Syntax: WHERE 1=1 [[AND condition = {{parameter}}]]
+   - Example: WHERE 1=1 [[AND gender = {{gender}}]]
+   - Limitation: Also disappear when added to dashboard
+   - Use case: Questions with optional filters
+
+3. FIELD FILTERS ({{parameter}} as Field Filter type) - Work EVERYWHERE
+   - Syntax: WHERE {{parameter_name}}
+   - Example: WHERE {{gender}} AND {{abonoment_type}}
+   - Setup: Parameter type = "Field Filter", map to database field
+   - Advantage: Works in questions AND dashboards
+   - Use case: Best for dashboard filtering
+
+RECOMMENDED APPROACH FOR DASHBOARDS:
+===================================
+Always use Field Filters (#3) when you want filtering to work on dashboards.
+
+Example SQL:
+SELECT COUNT(*) as total_members
+FROM gym_members  
+WHERE {{gender}} AND {{abonoment_type}} AND {{personal_training}};
+
+Setup steps:
+1. Add parameters in SQL editor
+2. Set each parameter type to "Field Filter"  
+3. Map each parameter to correct database field
+4. When added to dashboard, these become dashboard filters automatically
+
+DASHBOARD FILTERS vs QUESTION PARAMETERS:
+=========================================
+- Dashboard filters: Created at dashboard level, affect multiple charts
+- Question parameters: Created at question level, only work in that question
+- Field filters: Bridge both - work as question parameters AND become dashboard filters
+
+Remember: If you want filtering on dashboards, use Field Filters! 

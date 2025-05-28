@@ -1,46 +1,4 @@
--- Checking original table
-SELECT
-    id,
-    gender,
-    birthday
-    age,
-    abonoment_type,
-    visit_per_week,
-    days_per_week,
-    attend_group_lesson,
-    fav_group_lesson,
-    avg_time_check_in,
-    avg_time_check_out,
-    avg_time_in_gym,
-    drink_abo,
-    fav_drink,
-    personal_training,
-    name_personal_trainer,
-    uses_sauna
-FROM gym_members;
-
--- Checking the processed table
-SELECT
-    id,
-    gender,
-    birthday,
-    age,
-    abonoment_type,
-    visit_per_week,
-    attend_group_lesson,
-    avg_time_check_in,
-    avg_time_check_out,
-    avg_time_in_gym,
-    drink_abo,
-    personal_training,
-    uses_sauna,
-    name_personal_trainer,
-    UNNEST(string_to_array(fav_group_lesson, ', ')) AS lesson,
-    UNNEST(string_to_array(fav_drink, ', ')) AS drink,
-    UNNEST(string_to_array(days_per_week, ', ')) AS day_of_week
-FROM gym_members;
-
--- ================================================================================================
+-- ======================================================================== Individual Key Metrics ========================================================================
 
 -- Amount of membership
 SELECT
@@ -61,7 +19,7 @@ WITH expanded_lessons AS (
 SELECT COUNT(DISTINCT lesson) as unique_group_lessons
 FROM expanded_lessons;
 
--- ================================================================================================
+-- ======================================================================== Charts Generation ========================================================================
 
 -- Grouping by abonoment type
 SELECT

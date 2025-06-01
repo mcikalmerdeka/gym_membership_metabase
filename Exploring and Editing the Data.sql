@@ -88,3 +88,37 @@ FROM gym_members;
 SELECT rolname, rolcanlogin, rolsuper FROM pg_roles;
 SELECT * FROM pg_roles;
 SELECT usename, passwd FROM pg_shadow;
+
+-- ======================================================================== Small Preprocessing on Data Types =========================================================================
+
+-- Change boolean columns to character varying
+ALTER TABLE gym_members 
+    ALTER COLUMN attend_group_lesson TYPE VARCHAR USING attend_group_lesson::VARCHAR;
+
+ALTER TABLE gym_members 
+    ALTER COLUMN drink_abo TYPE VARCHAR USING drink_abo::VARCHAR;
+
+ALTER TABLE gym_members 
+    ALTER COLUMN personal_training TYPE VARCHAR USING personal_training::VARCHAR;
+
+ALTER TABLE gym_members 
+    ALTER COLUMN uses_sauna TYPE VARCHAR USING uses_sauna::VARCHAR;
+
+-- Rename the column to match desired schema
+ALTER TABLE gym_members 
+    RENAME COLUMN days_per_week TO day_of_week;
+
+ALTER TABLE gym_members 
+    ALTER COLUMN fav_group_lesson TYPE VARCHAR USING fav_group_lesson::VARCHAR;
+
+ALTER TABLE gym_members 
+    ALTER COLUMN fav_drink TYPE VARCHAR USING fav_drink::VARCHAR;
+
+ALTER TABLE gym_members 
+    ALTER COLUMN day_of_week TYPE VARCHAR USING day_of_week::VARCHAR;
+
+-- Verify the changes match the desired schema
+SELECT column_name, data_type
+FROM information_schema.columns 
+WHERE table_name = 'gym_members'
+ORDER BY ordinal_position;

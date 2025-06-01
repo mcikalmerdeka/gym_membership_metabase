@@ -86,18 +86,18 @@ FROM gym_members;
 -- Check in and check out time trends by hour
 WITH check_in AS (
     SELECT
-        EXTRACT(HOUR FROM avg_time_check_in::time) as check_in_hour,
+        EXTRACT(HOUR FROM avg_time_check_in) as check_in_hour,
         COUNT(*) as check_in_count
     FROM gym_members
-    GROUP BY EXTRACT(HOUR FROM avg_time_check_in::time)
+    GROUP BY EXTRACT(HOUR FROM avg_time_check_in)
     ORDER BY check_in_hour
 ),
 check_out AS (
     SELECT
-        EXTRACT(HOUR FROM avg_time_check_out::time) as check_out_hour,
+        EXTRACT(HOUR FROM avg_time_check_out) as check_out_hour,
         COUNT(*) as check_out_count
     FROM gym_members
-    GROUP BY EXTRACT(HOUR FROM avg_time_check_out::time)
+    GROUP BY EXTRACT(HOUR FROM avg_time_check_out)
     ORDER BY check_out_hour
 )
 SELECT
@@ -176,7 +176,7 @@ WHERE rank IN (1, 2);
 WITH expanded_days AS (
     SELECT 
         id,
-        UNNEST(string_to_array(days_per_week, ', ')) AS day_of_week
+        UNNEST(string_to_array(day_of_week, ', ')) AS day_of_week
     FROM gym_members
 )
 SELECT 
@@ -194,38 +194,3 @@ ORDER BY
         WHEN day_of_week = 'Sat' THEN 6
         WHEN day_of_week = 'Sun' THEN 7
     END;
-
-
--- ================================================================================================
-
--- 
-
-
-
--- Count total number of rows
-SELECT COUNT(*) as total_rows 
-FROM gym_members;
-
--- Count total number of columns
-SELECT COUNT(*) as total_columns
-FROM information_schema.columns 
-WHERE table_name = 'gym_members';
-
--- Get detailed column information
-SELECT column_name, data_type
-FROM information_schema.columns 
-WHERE table_name = 'gym_members'
-ORDER BY ordinal_position;
-
--- Count rows with additional information (counting the male and female distribution)
-SELECT 
-    COUNT(*) as total_rows,
-    COUNT(CASE WHEN gender = 'Male' THEN 1 END) as male_count,
-    COUNT(CASE WHEN gender = 'Female' THEN 1 END) as female_count,
-    COUNT(CASE WHEN personal_training = true THEN 1 END) as personal_training_count
-FROM gym_members;
-
--- Check 
-SELECT rolname, rolcanlogin, rolsuper FROM pg_roles;
-SELECT * FROM pg_roles;
-SELECT usename, passwd FROM pg_shadow;

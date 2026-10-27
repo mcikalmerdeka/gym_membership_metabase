@@ -1,0 +1,55 @@
+# Local development stack for the Gym Membership Metabase project.
+# Credentials are local-only defaults. Change them before exposing this stack.
+#
+# Host ports:
+#   Metabase:        http://localhost:3000
+#   PostgreSQL:      localhost:5433 (5432 is often taken by a local Postgres)
+#   Inside Docker:   postgres:5432
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gym-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gym}
+      POSTGRES_USER: ${POSTGRES_USER:-gym_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-gym_password}
+      TZ: ${TZ:-Asia/Jakarta}
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5433}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init:/docker-entrypoint-initdb.d:ro
+      - ./data/analysis_ready:/workspace/data/analysis_ready:ro
+      - ./sql:/workspace/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: gym-metabase
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabase
+      MB_DB_PORT: 5432
+      MB_DB_USER: ${POSTGRES_USER:-gym_admin}
+      MB_DB_PASS: ${POSTGRES_PASSWORD:-gym_password}
+      MB_DB_HOST: postgres
+      MB_SITE_URL: ${MB_SITE_URL:-http://localhost:3000}
+      JAVA_TIMEZONE: ${TZ:-Asia/Jakarta}
+    ports:
+      - "127.0.0.1:${METABASE_PORT:-3000}:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  metabase_data:

@@ -73,14 +73,114 @@ The dashboard is powered by optimized PostgreSQL queries that handle:
 
 ## Data Processing Features
 - **Data Cleaning**: Handled in `value_fixing.ipynb` notebook
-- **Error Handling**: Documented approaches in `Error Handling Notes.txt`
-- **Data Exploration**: SQL-based analysis in `Exploring and Editing the Data.sql`
+- **Normalization**: Multi-valued day, lesson, and drink fields are expanded by `scripts/build_analysis_ready.py`
+- **Error Handling**: Documented approaches in `docs/Error Handling Notes.txt`
+- **Data Exploration**: SQL-based analysis in `sql/Exploring and Editing the Data.sql`
+
+## Analysis-Ready Dataset
+
+The multi-valued columns `days_per_week`, `fav_group_lesson`, and `fav_drink`
+are normalized into two complementary forms:
+
+- `data/analysis_ready/gym_members_wide.csv` — one row per member with boolean
+  indicator columns for every day, lesson, and drink, plus `n_fav_lessons` and
+  `n_fav_drinks`.
+- `data/analysis_ready/members.csv`, `member_days.csv`, `member_lessons.csv`,
+  and `member_drinks.csv` — a star schema with one bridge table per
+  multi-valued attribute. Join each bridge table to `members.id` independently.
+
+Rebuild and validate the outputs with:
+
+```bash
+uv run python scripts/build_analysis_ready.py
+uv run pytest
+```
+
+See `data/analysis_ready/data_dictionary.md` for the full schema, value sets,
+and validation rules. The old `data/gym_membership_cleaned_normalized.csv` is
+deprecated: it zipped the three independent lists together positionally,
+creating false lesson/day associations. PostgreSQL DDL and `\copy` commands
+are in `sql/analysis_ready_schema.sql`.
+
+## Running Metabase Locally with Docker
+
+For a condensed command checklist, see `docs/docker-setup.md`.
+
+Prerequisites: Docker Desktop with Docker Compose.
+
+Start the stack:
+
+```bash
+docker compose up -d
+```
+
+Then open <http://localhost:3000> and create the first admin account. The first
+start can take a minute or two while Metabase initializes.
+
+The Compose stack provisions:
+
+- `gym` — the analysis-ready tables, loaded on first initialization from
+  `data/analysis_ready/` using `sql/analysis_ready_schema.sql`.
+- `metabase` — Metabase's own application data, kept separate from the gym data.
+- PostgreSQL is exposed on `localhost:5433` for host tools because local
+  PostgreSQL installations commonly use `5432`. Metabase connects internally
+  through `postgres:5432`.
+
+When adding the database connection inside Metabase, use:
+
+| Setting | Value |
+|---|---|
+| Host | `postgres` |
+| Port | `5432` |
+| Database | `gym` |
+| Username | `gym_admin` |
+| Password | `gym_password` |
+
+When connecting from DBeaver or pgAdmin on the host, use `localhost:5433`
+instead.
+
+Reload the CSVs after rebuilding the analysis-ready outputs:
+
+```bash
+docker compose exec -T postgres sh -c "cd /workspace && psql -U gym_admin -d gym -f sql/analysis_ready_schema.sql"
+```
+
+Stop the stack:
+
+```bash
+docker compose down
+```
+
+Stop and delete the database and Metabase application data:
+
+```bash
+docker compose down -v
+```
+
+The default credentials are for local development only. Override
+`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_PORT`, `METABASE_PORT`, or `TZ`
+through your shell or a `.env` file before exposing the stack outside your
+machine.
+
+## Dashboard Build Guide
+
+For the question-by-question build order, verified SQL, visualization choices,
+and dashboard filter mapping, see `docs/dashboard-build-guide.md`.
 
 ## Files Structure
-- `metabase_question_generation.sql`: All dashboard queries and metrics
-- `Create Table in Postgres.sql`: Database schema setup
-- `data/`: Raw and cleaned datasets
-- `Metabase_Parameter_Types_Reference.txt`: Parameter configuration guide
+- `sql/metabase_question_generation.sql`: All dashboard queries and metrics
+- `sql/Create Table in Postgres.sql`: Database schema setup
+- `sql/Exploring and Editing the Data.sql`: Data exploration queries
+- `sql/analysis_ready_schema.sql`: PostgreSQL DDL and `\copy` commands for the analysis-ready tables
+- `data/`: Raw, cleaned, and analysis-ready datasets (`data/analysis_ready/`)
+- `scripts/build_analysis_ready.py`: Reproducible normalization and validation build
+- `tests/test_analysis_ready.py`: Data-quality and round-trip tests
+- `docker-compose.yml`: Local PostgreSQL + Metabase stack
+- `docker/init/`: First-start database creation and analysis-data load
+- `docs/docker-setup.md`: Docker start/stop/reload runbook
+- `docs/dashboard-build-guide.md`: Dashboard build order and verified Metabase SQL
+- `docs/Metabase_Parameter_Types_Reference.txt`: Parameter configuration guide
+- `docs/Error Handling Notes.txt`: Metabase deployment and error-handling notes
 - `value_fixing.ipynb`: Data cleaning and preprocessing notebook
 
 ## Dashboard Features

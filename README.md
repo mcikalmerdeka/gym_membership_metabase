@@ -179,7 +179,8 @@ and dashboard filter mapping, see `docs/dashboard-build-guide.md`.
 - `docker/init/`: First-start database creation and analysis-data load
 - `docs/docker-setup.md`: Docker start/stop/reload runbook
 - `docs/dashboard-build-guide.md`: Dashboard build order and verified Metabase SQL
-- `docs/Metabase_Parameter_Types_Reference.txt`: Parameter configuration guide
+- `docs/dashboard-sql-with-filters.md`: Field-filtered native SQL for all 20 dashboard cards
+- `docs/Metabase_Parameter_Types_Reference.md`: Parameter configuration guide
 - `docs/Error Handling Notes.txt`: Metabase deployment and error-handling notes
 - `value_fixing.ipynb`: Data cleaning and preprocessing notebook
 

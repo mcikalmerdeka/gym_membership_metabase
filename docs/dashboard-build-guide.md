@@ -121,6 +121,11 @@ Use these in the optional **Description** field when saving each question.
 Use **Native query** for the cards below. The SQL has been tested against the
 running `gym` database.
 
+> If you plan to use the dashboard filters in Step 6, use the field-filtered
+> versions in [dashboard-sql-with-filters.md](dashboard-sql-with-filters.md).
+> The SQL below has no variables and cannot be mapped to dashboard filters
+> as-is.
+
 ### 1. Total Members
 
 ```sql
@@ -438,34 +443,40 @@ Use **Text cards** as section headings:
 
 Start with these filters:
 
-| Filter                  | Type     | Column                |
-| ----------------------- | -------- | --------------------- |
-| Gender                  | Category | `gender`              |
-| Membership Type         | Category | `abonoment_type`      |
-| Personal Training       | Category | `personal_training`   |
-| Sauna Usage             | Category | `uses_sauna`          |
-| Group Lesson Attendance | Category | `attend_group_lesson` |
-| Drink Package           | Category | `drink_abo`           |
+| Filter                  | Type             | Column                |
+| ----------------------- | ---------------- | --------------------- |
+| Gender                  | Text or Category | `gender`              |
+| Membership Type         | Text or Category | `abonoment_type`      |
+| Personal Training       | Boolean          | `personal_training`   |
+| Sauna Usage             | Boolean          | `uses_sauna`          |
+| Group Lesson Attendance | Boolean          | `attend_group_lesson` |
+| Drink Package           | Boolean          | `drink_abo`           |
 
 To add a filter:
 
 1. Edit the dashboard.
 2. Click **Add a filter**.
 3. Choose the filter type.
-4. For each card, map the filter to the matching column.
+4. For each card, map the filter to the matching column or variable.
 5. Save the dashboard.
+
+If you are keeping the questions as **Native SQL**, the queries in Step 4 do
+not contain variables, so Metabase has nothing to map the filters to. Use the
+field-filtered versions in
+[dashboard-sql-with-filters.md](dashboard-sql-with-filters.md) instead.
 
 ### Important filter behavior
 
-A filter only affects cards where it is mapped. Because all member-level cards
-in this guide use `gym_members_wide`, mapping is straightforward.
+A filter only affects cards where it is mapped. For cards built with the query
+builder on `gym_members_wide`, Metabase knows the columns and mapping is
+straightforward.
 
-For native SQL popularity cards, dashboard filters require a **Field Filter**
-variable in the SQL. If a filter does not map to a popularity card, you have
-two options:
+For native SQL cards, every card needs a **Field Filter** variable for each
+filter you want to apply. A raw SQL column cannot be mapped directly. If a
+filter does not map to a native card, you have two options:
 
 - Leave that card unfiltered.
-- Add a Field Filter variable to the SQL and map it in the question settings.
+- Add the Field Filter variable to the SQL and map it in the question settings.
 
 Do not force a filter mapping that changes the meaning of a card. Test each
 filter after mapping.

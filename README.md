@@ -200,4 +200,4 @@ This dashboard enables gym management to:
 - Make data-driven decisions for facility improvements
 
 ## Dashboard Screenshot
-![Dashboard Screenshot](assets/Gym%20Membership%20Operational%20Dashboard_page-0001.jpg)
+![Dashboard Screenshot](assets/Metabase%20-%20Gym%20Membership%20Operational%20Dashboard.jpg)
